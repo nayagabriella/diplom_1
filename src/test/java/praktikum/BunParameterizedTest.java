@@ -31,10 +31,14 @@ public class BunParameterizedTest {
     }
 
     @Test
-    public void testBunConstructorAndGetters() {
+    public void testBunGetName() {
         Bun bun = new Bun(name, price);
-
         assertEquals(name, bun.getName());
+    }
+
+    @Test
+    public void testBunGetPrice() {
+        Bun bun = new Bun(name, price);
         assertEquals(price, bun.getPrice(), 0.001f);
     }
 }

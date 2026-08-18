@@ -33,11 +33,20 @@ public class IngredientParameterizedTest {
     }
 
     @Test
-    public void testIngredientConstructorAndGetters() {
+    public void testIngredientGetType() {
         Ingredient ingredient = new Ingredient(type, name, price);
-
         assertEquals(type, ingredient.getType());
+    }
+
+    @Test
+    public void testIngredientGetName() {
+        Ingredient ingredient = new Ingredient(type, name, price);
         assertEquals(name, ingredient.getName());
+    }
+
+    @Test
+    public void testIngredientGetPrice() {
+        Ingredient ingredient = new Ingredient(type, name, price);
         assertEquals(price, ingredient.getPrice(), 0.001f);
     }
 }

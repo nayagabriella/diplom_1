@@ -6,8 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -17,10 +18,10 @@ public class BurgerTest {
     private Bun mockBun;
 
     @Mock
-    private Ingredient mockIngredient1;
+    private Ingredient mockSauce;
 
     @Mock
-    private Ingredient mockIngredient2;
+    private Ingredient mockFilling;
 
     private Burger burger;
 
@@ -37,41 +38,39 @@ public class BurgerTest {
 
     @Test
     public void testAddIngredient() {
-        burger.addIngredient(mockIngredient1);
-        assertEquals(1, burger.ingredients.size());
-        assertTrue(burger.ingredients.contains(mockIngredient1));
+        burger.addIngredient(mockSauce);
+        assertEquals(Arrays.asList(mockSauce), burger.ingredients);
     }
 
     @Test
     public void testRemoveIngredient() {
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
+
         burger.removeIngredient(0);
 
-        assertEquals(1, burger.ingredients.size());
-        assertTrue(burger.ingredients.contains(mockIngredient2));
+        assertEquals(Arrays.asList(mockFilling), burger.ingredients);
     }
 
     @Test
     public void testMoveIngredient() {
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         burger.moveIngredient(1, 0);
 
-        assertEquals(mockIngredient2, burger.ingredients.get(0));
-        assertEquals(mockIngredient1, burger.ingredients.get(1));
+        assertEquals(Arrays.asList(mockFilling, mockSauce), burger.ingredients);
     }
 
     @Test
     public void testGetPrice() {
         when(mockBun.getPrice()).thenReturn(50.0f);
-        when(mockIngredient1.getPrice()).thenReturn(10.0f);
-        when(mockIngredient2.getPrice()).thenReturn(20.0f);
+        when(mockSauce.getPrice()).thenReturn(10.0f);
+        when(mockFilling.getPrice()).thenReturn(20.0f);
 
         burger.setBuns(mockBun);
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         // 50 * 2 (булки) + 10 + 20 = 130
         assertEquals(130.0f, burger.getPrice(), 0.001f);
@@ -81,25 +80,24 @@ public class BurgerTest {
     public void testGetReceipt() {
         when(mockBun.getName()).thenReturn("Test Bun");
         when(mockBun.getPrice()).thenReturn(50.0f);
-
-        when(mockIngredient1.getType()).thenReturn(IngredientType.SAUCE);
-        when(mockIngredient1.getName()).thenReturn("Hot Sauce");
-        when(mockIngredient1.getPrice()).thenReturn(10.0f);
-
-        when(mockIngredient2.getType()).thenReturn(IngredientType.FILLING);
-        when(mockIngredient2.getName()).thenReturn("Cutlet");
-        when(mockIngredient2.getPrice()).thenReturn(20.0f);
+        when(mockSauce.getType()).thenReturn(IngredientType.SAUCE);
+        when(mockSauce.getName()).thenReturn("Hot Sauce");
+        when(mockSauce.getPrice()).thenReturn(10.0f);
+        when(mockFilling.getType()).thenReturn(IngredientType.FILLING);
+        when(mockFilling.getName()).thenReturn("Cutlet");
+        when(mockFilling.getPrice()).thenReturn(20.0f);
 
         burger.setBuns(mockBun);
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
-        String receipt = burger.getReceipt();
+        String expectedReceipt = String.format(
+                "(==== Test Bun ====)%n" +
+                        "= sauce Hot Sauce =%n" +
+                        "= filling Cutlet =%n" +
+                        "(==== Test Bun ====)%n" +
+                        "%nPrice: %f%n", 130.0f);
 
-        assertTrue(receipt.contains("(==== Test Bun ====)"));
-        assertTrue(receipt.contains("= sauce Hot Sauce ="));
-        assertTrue(receipt.contains("= filling Cutlet ="));
-        assertTrue(receipt.contains("Price:"));
-        assertTrue(receipt.contains("130"));
+        assertEquals(expectedReceipt, burger.getReceipt());
     }
 }
